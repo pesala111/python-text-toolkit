@@ -14,19 +14,21 @@ jobs:
         with:
           python-version: "3.11"
 
+      # Install uv without pip
       - name: Install uv
-        run: pip install uv
-
-      - name: Install deps
         run: |
-          uv venv
-          uv pip install -e ".[dev]"
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      # Install deps using uv (system install so tools are on PATH)
+      - name: Install deps
+        run: uv pip install --system -e ".[dev]"
 
       - name: Lint
-        run: uv run ruff check .
+        run: ruff check .
 
       - name: Type check
-        run: uv run mypy src/textkit
+        run: mypy src/textkit
 
       - name: Tests
-        run: uv run pytest -q
+        run: pytest -q
